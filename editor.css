@@ -1,229 +1,308 @@
-/* Scoped Styles for Live Editor Injected UI */
+/* Live Editor v2.5 - Orange Bullet Handles */
 
-/* Root Wrapper to avoid conflicts (mostly) */
+/* --- RESET & ROOT --- */
 #live-editor-root {
-    font-family: 'Inter', sans-serif;
-    color: #333;
+    all: initial;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-size: 14px;
+    line-height: 1.5;
+    color: #333;
     z-index: 2147483647;
-    /* Max Z-Index */
-    position: relative;
-    text-align: left;
-}
-
-/* Toolbar */
-.le-toolbar-top {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    height: 50px;
-    background: #ffffff;
-    border-bottom: 1px solid #e0e0e0;
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    justify-content: space-between;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+#live-editor-root * {
+    box-sizing: border-box;
+}
+
+/* --- OVERLAY & HANDLES --- */
+#le-overlays-container {
+    pointer-events: none;
+    z-index: 2147483646;
+}
+
+.le-selection-box {
+    pointer-events: none;
+    box-shadow: 0 0 0 2px #2874f0;
+    /* Blue Border */
+    position: absolute;
+    z-index: 2147483646;
+}
+
+/* ORANGE BULLET HANDLES */
+.le-resize-handle {
+    pointer-events: auto;
+    width: 14px;
+    height: 14px;
+    background: #ff6b00;
+    /* Full Orange */
+    border: 2px solid #ffffff;
+    /* White Stroke for contrast */
+    position: absolute;
     z-index: 2147483647;
+    border-radius: 50%;
+    /* Round */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    /* Slight depth */
+    transition: transform 0.1s;
 }
 
-.le-brand {
-    font-weight: 600;
-    color: #333;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.le-resize-handle:hover {
+    transform: scale(1.2);
+    /* Pop effect */
 }
 
-.le-brand i {
-    color: #007bff;
+/* Handle Positions (Relative to box) */
+.le-handle-tl {
+    top: -7px;
+    left: -7px;
+    cursor: nw-resize;
 }
 
-.le-actions {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+.le-handle-tr {
+    top: -7px;
+    right: -7px;
+    cursor: ne-resize;
 }
 
-.le-btn {
-    background: none;
-    border: none;
-    padding: 6px 10px;
+.le-handle-bl {
+    bottom: -7px;
+    left: -7px;
+    cursor: sw-resize;
+}
+
+.le-handle-br {
+    bottom: -7px;
+    right: -7px;
+    cursor: se-resize;
+}
+
+.le-badge {
+    pointer-events: none;
+    background: #2874f0;
+    color: white;
+    padding: 2px 6px;
     border-radius: 4px;
-    color: #333;
-    cursor: pointer;
-    font-size: 14px;
-    gap: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    position: absolute;
+    top: -24px;
+    left: 0;
+    white-space: nowrap;
+}
+
+/* --- TOOLBAR --- */
+.le-toolbar {
+    pointer-events: auto;
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 6px 12px;
     display: flex;
     align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    height: 48px;
 }
 
-.le-btn:hover {
-    background: #f5f5f5;
+.le-icon-btn {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 16px;
 }
 
-.le-btn.active {
-    background: #e6f0ff;
-    color: #007bff;
+.le-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.le-icon-btn.active {
+    background: #2874f0;
+    color: #fff;
 }
 
 .le-divider {
     width: 1px;
     height: 20px;
-    background: #e0e0e0;
-    margin: 0 8px;
+    background: rgba(255, 255, 255, 0.2);
 }
 
-.le-publish-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 6px 16px;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-/* Panel */
-.le-properties-panel {
+/* --- SIDEBAR --- */
+.le-sidebar {
+    pointer-events: auto;
     position: fixed;
-    right: 20px;
-    top: 70px;
-    /* Below toolbar */
-    width: 260px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    border: 1px solid #e0e0e0;
-    z-index: 2147483646;
+    top: 16px;
+    right: 16px;
+    bottom: 16px;
+    width: 300px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
+    border: 1px solid #e0e0e0;
 }
 
-.le-panel-header {
-    padding: 12px 16px;
-    background: #fcfcfc;
+.le-sidebar-header {
+    padding: 16px;
     border-bottom: 1px solid #eee;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: #f8f9fa;
+    flex-shrink: 0;
 }
 
-.le-panel-header h3 {
+.le-sidebar-header h3 {
     margin: 0;
     font-size: 14px;
+    font-weight: 600;
+    color: #111;
 }
 
-.le-panel-header i {
-    cursor: pointer;
-    color: #999;
+.le-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
 }
 
-.le-panel-section {
-    padding: 16px;
-    border-bottom: 1px solid #f9f9f9;
-}
-
-.le-label {
+.le-block-title {
+    padding: 12px 16px 8px;
     font-size: 11px;
     text-transform: uppercase;
-    color: #777;
-    font-weight: 600;
-    margin-bottom: 8px;
-    display: block;
+    color: #888;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-.le-row {
+.le-component-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 0 16px 16px;
+}
+
+.le-component-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.le-component-btn:hover {
+    background: #fff;
+    border-color: #2874f0;
+    box-shadow: 0 2px 8px rgba(40, 116, 240, 0.1);
+}
+
+.le-component-btn i {
+    font-size: 16px;
+    color: #444;
+}
+
+.le-component-btn span {
+    font-size: 10px;
+    color: #555;
+    font-weight: 500;
+}
+
+.le-inspector-box {
+    padding: 0 16px 16px;
+}
+
+.le-control-row {
     display: flex;
     gap: 8px;
     margin-bottom: 8px;
 }
 
-.le-two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+.le-control-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    margin-bottom: 8px;
 }
 
-.le-input-group {
-    display: flex;
-    align-items: center;
+.le-label {
+    font-size: 11px;
+    color: #666;
+    font-weight: 500;
+}
+
+.le-input {
+    width: 100%;
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
-    padding: 4px 8px;
-    flex: 1;
-}
-
-.le-input-group span {
-    font-size: 11px;
-    color: #999;
-    margin-right: 6px;
-}
-
-.le-input-group input,
-.le-row input {
-    border: none;
-    outline: none;
-    width: 100%;
+    padding: 6px 8px;
     font-size: 12px;
+    color: #333;
+    transition: border 0.2s;
+}
+
+.le-input:focus {
+    outline: none;
+    border-color: #2874f0;
+}
+
+.le-color-wrap {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px;
+    gap: 8px;
 }
 
 .le-color-preview {
-    width: 16px;
-    height: 16px;
-    border-radius: 2px;
-    border: 1px solid #ccc;
-    margin-left: auto;
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+    border: 1px solid #eee;
 }
 
-/* Overlay & Selection */
-.le-editor-overlay {
-    position: absolute;
-    pointer-events: none;
-    border: 2px solid #007bff;
-    z-index: 2147483645;
+::-webkit-scrollbar {
+    width: 6px;
 }
 
-.le-resize-handle {
-    width: 8px;
-    height: 8px;
-    background: white;
-    border: 1px solid #007bff;
-    position: absolute;
-    pointer-events: auto;
+::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-.le-handle-tl {
-    top: -5px;
-    left: -5px;
-    cursor: nw-resize;
-}
-
-.le-handle-tr {
-    top: -5px;
-    right: -5px;
-    cursor: ne-resize;
-}
-
-.le-handle-bl {
-    bottom: -5px;
-    left: -5px;
-    cursor: sw-resize;
-}
-
-.le-handle-br {
-    bottom: -5px;
-    right: -5px;
-    cursor: se-resize;
-}
-
-.le-badge {
-    position: absolute;
-    top: -24px;
-    left: 0;
-    background: #007bff;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 11px;
+::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 3px;
 }
