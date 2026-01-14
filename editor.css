@@ -1,4 +1,4 @@
-/* Live Editor v2.5 - Orange Bullet Handles */
+/* Live Editor v2.8 - 8-Point Resizing (Corners & Sides) */
 
 /* --- RESET & ROOT --- */
 #live-editor-root {
@@ -29,58 +29,99 @@
 .le-selection-box {
     pointer-events: none;
     box-shadow: 0 0 0 2px #2874f0;
-    /* Blue Border */
     position: absolute;
     z-index: 2147483646;
 }
 
-/* ORANGE BULLET HANDLES */
+/* HANDLE STYLES */
 .le-resize-handle {
     pointer-events: auto;
     width: 14px;
     height: 14px;
     background: #ff6b00;
-    /* Full Orange */
+    /* Bullet Orange */
     border: 2px solid #ffffff;
-    /* White Stroke for contrast */
     position: absolute;
     z-index: 2147483647;
     border-radius: 50%;
-    /* Round */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    /* Slight depth */
     transition: transform 0.1s;
 }
 
 .le-resize-handle:hover {
     transform: scale(1.2);
-    /* Pop effect */
 }
 
-/* Handle Positions (Relative to box) */
-.le-handle-tl {
+/* CORNERS */
+.le-handle-nw {
     top: -7px;
     left: -7px;
     cursor: nw-resize;
 }
 
-.le-handle-tr {
+.le-handle-ne {
     top: -7px;
     right: -7px;
     cursor: ne-resize;
 }
 
-.le-handle-bl {
+.le-handle-sw {
     bottom: -7px;
     left: -7px;
     cursor: sw-resize;
 }
 
-.le-handle-br {
+.le-handle-se {
     bottom: -7px;
     right: -7px;
     cursor: se-resize;
 }
+
+/* SIDES (New) */
+.le-handle-n {
+    top: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: n-resize;
+}
+
+.le-handle-s {
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: s-resize;
+}
+
+.le-handle-e {
+    right: -7px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: e-resize;
+}
+
+.le-handle-w {
+    left: -7px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: w-resize;
+}
+
+.le-handle-n:hover {
+    transform: translateX(-50%) scale(1.2);
+}
+
+.le-handle-s:hover {
+    transform: translateX(-50%) scale(1.2);
+}
+
+.le-handle-e:hover {
+    transform: translateY(-50%) scale(1.2);
+}
+
+.le-handle-w:hover {
+    transform: translateY(-50%) scale(1.2);
+}
+
 
 .le-badge {
     pointer-events: none;
