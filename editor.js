@@ -1,4 +1,4 @@
-/* Editor Logic - Double Click to Move */
+/* Editor Logic - Complete + Add Elements */
 (function () {
     if (document.getElementById('live-editor-root')) {
         alert('Live Editor is already active!');
@@ -24,10 +24,14 @@
     <div class="le-toolbar-top">
         <div class="le-brand"><i class="fa-solid fa-layer-group"></i> LiveEditor</div>
         <div class="le-actions">
-            <button class="le-btn active" id="le-tool-select"><i class="fa-solid fa-arrow-pointer"></i> Select</button>
-            <button class="le-btn" id="le-tool-move"><i class="fa-solid fa-up-down-left-right"></i> Move</button>
-            <button class="le-btn" id="le-tool-text"><i class="fa-solid fa-font"></i> Text</button>
-            <button class="le-btn" id="le-tool-delete"><i class="fa-solid fa-trash"></i> Delete</button>
+            <button class="le-btn active" id="le-tool-select" title="Select"><i class="fa-solid fa-arrow-pointer"></i></button>
+            <button class="le-btn" id="le-tool-move" title="Move"><i class="fa-solid fa-up-down-left-right"></i></button>
+            <button class="le-btn" id="le-tool-text" title="Edit Text"><i class="fa-solid fa-i-cursor"></i></button>
+            <button class="le-btn" id="le-tool-delete" title="Delete"><i class="fa-solid fa-trash"></i></button>
+            <div class="le-divider"></div>
+            <button class="le-btn" id="le-tool-add-text" title="Add Text"><i class="fa-solid fa-font"></i></button>
+            <button class="le-btn" id="le-tool-add-img" title="Add Image"><i class="fa-regular fa-image"></i></button>
+            <button class="le-btn" id="le-tool-add-btn" title="Add Button"><i class="fa-solid fa-mobile-button"></i></button>
         </div>
         <div class="le-meta"><button class="le-publish-btn" id="le-finish-btn">Done</button></div>
     </div>
@@ -55,6 +59,7 @@
 
     const overlay = document.createElement('div');
     overlay.className = 'le-editor-overlay';
+    overlay.style.position = 'fixed';
     document.body.appendChild(overlay);
 
     const inputs = {
@@ -72,8 +77,8 @@
         if (!state.selected) { overlay.style.display = 'none'; return; }
         const r = state.selected.getBoundingClientRect();
         overlay.style.display = 'block';
-        overlay.style.top = (r.top + window.scrollY) + 'px';
-        overlay.style.left = (r.left + window.scrollX) + 'px';
+        overlay.style.top = r.top + 'px';
+        overlay.style.left = r.left + 'px';
         overlay.style.width = r.width + 'px';
         overlay.style.height = r.height + 'px';
 
@@ -102,7 +107,9 @@
     function setMode(m) {
         state.mode = m;
         document.querySelectorAll('.le-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(`le-tool-${m}`).classList.add('active');
+        const btn = document.getElementById(`le-tool-${m}`);
+        if (btn) btn.classList.add('active');
+
         document.body.style.cursor = m === 'move' ? 'move' : (m === 'text' ? 'text' : 'default');
         if (state.selected && m !== 'text') state.selected.contentEditable = 'false';
     }
@@ -114,11 +121,8 @@
     }
 
     // --- Events ---
-
-    // 0. Disable Native Drag
     document.addEventListener('dragstart', (e) => e.preventDefault(), true);
 
-    // 1. Mouse Down
     document.addEventListener('mousedown', (e) => {
         if (e.target.classList.contains('le-resize-handle')) {
             e.preventDefault(); e.stopPropagation();
@@ -140,7 +144,6 @@
         }
     }, true);
 
-    // 2. Mouse Move
     document.addEventListener('mousemove', (e) => {
         if (state.isResizing && state.selected) {
             const dx = e.clientX - state.startPos.x;
@@ -160,13 +163,13 @@
         }
     });
 
-    // 3. Mouse Up
     document.addEventListener('mouseup', () => {
         state.isDragging = false;
         state.isResizing = false;
     });
 
-    // 4. Click
+    window.addEventListener('scroll', updateOverlay, true);
+
     document.addEventListener('click', (e) => {
         if (root.contains(e.target) || overlay.contains(e.target)) return;
         e.preventDefault(); e.stopPropagation();
@@ -183,22 +186,63 @@
         }
     }, true);
 
-    // 5. Double Click (NEW FEATURE)
     document.addEventListener('dblclick', (e) => {
         if (root.contains(e.target) || overlay.contains(e.target)) return;
-
-        // If clicking a selected element, switch to move mode
         if (state.selected && e.target === state.selected) {
             e.preventDefault(); e.stopPropagation();
             setMode('move');
         }
     }, true);
 
-    window.addEventListener('scroll', updateOverlay);
     window.addEventListener('resize', updateOverlay);
+
+    // --- Actions ---
+    function createElement(type) {
+        let el;
+        const x = window.scrollX + window.innerWidth / 3;
+        const y = window.scrollY + window.innerHeight / 3;
+
+        if (type === 'text') {
+            el = document.createElement('h2');
+            el.textContent = 'New Text Layer';
+            el.style.color = '#333';
+            el.style.fontSize = '24px';
+        } else if (type === 'img') {
+            el = document.createElement('img');
+            el.src = 'https://via.placeholder.com/300x200?text=New+Image';
+            el.style.width = '300px';
+        } else if (type === 'btn') {
+            el = document.createElement('button');
+            el.textContent = 'Click Me';
+            el.style.padding = '10px 20px';
+            el.style.background = '#007bff';
+            el.style.color = 'white';
+            el.style.border = 'none';
+            el.style.borderRadius = '4px';
+        }
+
+        if (el) {
+            el.style.position = 'absolute';
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            el.style.zIndex = 1000;
+            document.body.appendChild(el);
+
+            // Auto-select
+            state.selected = el;
+            updateOverlay();
+            syncPanel();
+            setMode('move');
+        }
+    }
 
     // --- Wiring ---
     ['select', 'move', 'text', 'delete'].forEach(m => document.getElementById(`le-tool-${m}`).addEventListener('click', () => setMode(m)));
+
+    document.getElementById('le-tool-add-text').addEventListener('click', () => createElement('text'));
+    document.getElementById('le-tool-add-img').addEventListener('click', () => createElement('img'));
+    document.getElementById('le-tool-add-btn').addEventListener('click', () => createElement('btn'));
+
     const apply = (p, v) => { if (state.selected) { state.selected.style[p] = v; updateOverlay(); } };
     inputs.w.addEventListener('change', e => apply('width', e.target.value));
     inputs.h.addEventListener('change', e => apply('height', e.target.value));
@@ -206,6 +250,7 @@
     inputs.bg.addEventListener('change', e => { apply('backgroundColor', e.target.value); inputs.bgP.style.background = e.target.value; });
     inputs.c.addEventListener('change', e => apply('color', e.target.value));
     inputs.s.addEventListener('change', e => apply('fontSize', e.target.value));
+
     document.getElementById('le-finish-btn').addEventListener('click', () => { root.remove(); overlay.remove(); if (state.selected) state.selected.contentEditable = 'false'; });
     document.getElementById('le-close-panel').addEventListener('click', () => document.querySelector('.le-properties-panel').style.display = 'none');
 
