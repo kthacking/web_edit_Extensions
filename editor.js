@@ -1,4 +1,4 @@
-/* Live Editor v3.6 - Keyboard Navigation & Multi-Selection */
+/* Live Editor v3.8 - WE Logo Branding */
 (function () {
     if (document.getElementById('live-editor-root')) {
         const root = document.getElementById('live-editor-root');
@@ -56,9 +56,18 @@
     // --- 3. HTML Templates ---
     const ICONS = { select: 'fa-arrow-pointer', move: 'fa-up-down-left-right', text: 'fa-i-cursor', delete: 'fa-trash', desktop: 'fa-desktop', tablet: 'fa-tablet-screen-button', mobile: 'fa-mobile-screen-button', undo: 'fa-rotate-left', redo: 'fa-rotate-right' };
 
+    // UPDATED TOOLBAR WITH WE LOGO
     const UI_TOOLBAR = `
     <div class="le-toolbar">
-        <div class="le-brand"><i class="fa-solid fa-layer-group"></i></div>
+        <div class="le-brand" style="display:flex;align-items:center;gap:6px; padding-right:8px;">
+            <svg width="24" height="24" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 10 L12 32 L20 10 L28 32 L34 10" stroke="#F2542D" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M34 10 L39 10" stroke="#F2542D" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M30 21 L39 21" stroke="#F2542D" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M28 32 L39 32" stroke="#F2542D" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span style="font-weight:900; color:#F2542D; font-size:15px; letter-spacing:-0.5px; font-family:'Inter', sans-serif;">WE</span>
+        </div>
         <div class="le-divider"></div>
         <button class="le-icon-btn active" id="le-tool-select" title="Select"><i class="fa-solid ${ICONS.select}"></i></button>
         <button class="le-icon-btn" id="le-tool-move" title="Move"><i class="fa-solid ${ICONS.move}"></i></button>
@@ -391,7 +400,8 @@
     }, true);
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Delete' || e.key === 'Backspace') { if (!['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) && !document.activeElement.isContentEditable) { deleteSelection(); } }
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName) || document.activeElement.isContentEditable) return;
+        if (e.key === 'Delete' || e.key === 'Backspace') { deleteSelection(); }
 
         // --- MULTI-SELECT TRAVERSAL ---
         if (e.shiftKey && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {

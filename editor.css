@@ -1,4 +1,4 @@
-/* Live Editor v3.4 - Collapsible Panel */
+/* Live Editor v3.6 - Complete Restoration (Appreciation Theme) */
 
 /* --- RESET & ROOT --- */
 #live-editor-root {
@@ -172,21 +172,17 @@
     overflow: hidden;
     border: 1px solid #d1d1d1;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    /* Smooth Bounce Ease */
 }
 
-/* COLLAPSED STATE: Height fixed to header only */
+/* COLLAPSED STATE */
 .le-sidebar.collapsed {
     bottom: auto !important;
-    /* Release bottom anchor */
     height: 48px !important;
-    /* Fixed Header Height */
 }
 
 .le-sidebar-header {
     padding: 0 16px;
     height: 48px;
-    /* Fixed Height */
     border-bottom: 1px solid #e0e0e0;
     display: flex;
     justify-content: space-between;
@@ -194,7 +190,6 @@
     background: #f7f7f7;
     flex-shrink: 0;
     cursor: pointer;
-    /* Header is clickable */
 }
 
 .le-sidebar-header h3 {
@@ -215,7 +210,6 @@
 .le-sidebar.collapsed .le-toggle-icon {
     transform: rotate(180deg);
 }
-
 
 .le-scroll-area {
     flex: 1;

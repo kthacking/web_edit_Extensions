@@ -1,9 +1,6 @@
 chrome.action.onClicked.addListener((tab) => {
     if (!tab.url.includes("chrome://")) {
-        chrome.scripting.insertCSS({
-            target: { tabId: tab.id },
-            files: ["editor.css"]
-        });
+        // CSS is now handled by manifest content_scripts
         chrome.scripting.executeScript({
             target: { tabId: tab.id },
             files: ["editor.js"]
