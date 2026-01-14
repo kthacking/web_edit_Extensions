@@ -1,0 +1,32 @@
+{
+    "manifest_version": 3,
+    "name": "Website Live Editor",
+    "version": "1.1",
+    "description": "Edit any website in real-time with a modern UI.",
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_title": "Enable Live Editor"
+    },
+    "icons": {
+        "16": "icons/icon16.svg",
+        "48": "icons/icon48.svg",
+        "128": "icons/icon128.svg"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "editor.css",
+                "icons/*.png"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}

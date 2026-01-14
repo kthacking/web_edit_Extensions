@@ -1,0 +1,229 @@
+/* Scoped Styles for Live Editor Injected UI */
+
+/* Root Wrapper to avoid conflicts (mostly) */
+#live-editor-root {
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    font-size: 14px;
+    z-index: 2147483647;
+    /* Max Z-Index */
+    position: relative;
+    text-align: left;
+}
+
+/* Toolbar */
+.le-toolbar-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    justify-content: space-between;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 2147483647;
+}
+
+.le-brand {
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.le-brand i {
+    color: #007bff;
+}
+
+.le-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.le-btn {
+    background: none;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    color: #333;
+    cursor: pointer;
+    font-size: 14px;
+    gap: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.le-btn:hover {
+    background: #f5f5f5;
+}
+
+.le-btn.active {
+    background: #e6f0ff;
+    color: #007bff;
+}
+
+.le-divider {
+    width: 1px;
+    height: 20px;
+    background: #e0e0e0;
+    margin: 0 8px;
+}
+
+.le-publish-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Panel */
+.le-properties-panel {
+    position: fixed;
+    right: 20px;
+    top: 70px;
+    /* Below toolbar */
+    width: 260px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e0e0e0;
+    z-index: 2147483646;
+    overflow: hidden;
+}
+
+.le-panel-header {
+    padding: 12px 16px;
+    background: #fcfcfc;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.le-panel-header h3 {
+    margin: 0;
+    font-size: 14px;
+}
+
+.le-panel-header i {
+    cursor: pointer;
+    color: #999;
+}
+
+.le-panel-section {
+    padding: 16px;
+    border-bottom: 1px solid #f9f9f9;
+}
+
+.le-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #777;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.le-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.le-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.le-input-group {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 8px;
+    flex: 1;
+}
+
+.le-input-group span {
+    font-size: 11px;
+    color: #999;
+    margin-right: 6px;
+}
+
+.le-input-group input,
+.le-row input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 12px;
+}
+
+.le-color-preview {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    border: 1px solid #ccc;
+    margin-left: auto;
+}
+
+/* Overlay & Selection */
+.le-editor-overlay {
+    position: absolute;
+    pointer-events: none;
+    border: 2px solid #007bff;
+    z-index: 2147483645;
+}
+
+.le-resize-handle {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border: 1px solid #007bff;
+    position: absolute;
+    pointer-events: auto;
+}
+
+.le-handle-tl {
+    top: -5px;
+    left: -5px;
+    cursor: nw-resize;
+}
+
+.le-handle-tr {
+    top: -5px;
+    right: -5px;
+    cursor: ne-resize;
+}
+
+.le-handle-bl {
+    bottom: -5px;
+    left: -5px;
+    cursor: sw-resize;
+}
+
+.le-handle-br {
+    bottom: -5px;
+    right: -5px;
+    cursor: se-resize;
+}
+
+.le-badge {
+    position: absolute;
+    top: -24px;
+    left: 0;
+    background: #007bff;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+}

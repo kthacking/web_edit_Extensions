@@ -1,0 +1,590 @@
+/* CSS Variables for Theme */
+:root {
+    --primary-web: #2874f0;
+    /* Flipkart Blue */
+    --accent-ui: #007bff;
+    /* Editor Blue */
+    --bg-ui: #ffffff;
+    --border-ui: #e0e0e0;
+    --text-ui: #333333;
+    --text-muted: #757575;
+    --panel-width: 280px;
+    --toolbar-height: 50px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f1f3f6;
+    /* Fixed size for Chrome Extension Popup */
+    width: 780px;
+    height: 580px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Top Toolbar --- */
+.toolbar-top {
+    height: var(--toolbar-height);
+    background: var(--bg-ui);
+    border-bottom: 1px solid var(--border-ui);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    z-index: 1000;
+}
+
+.toolbar-brand {
+    font-weight: 600;
+    color: var(--text-ui);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toolbar-brand i {
+    color: var(--accent-ui);
+}
+
+.toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tool-btn {
+    background: none;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    color: var(--text-ui);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tool-btn:hover {
+    background: #f5f5f5;
+}
+
+.tool-btn.active {
+    background: #e6f0ff;
+    color: var(--accent-ui);
+}
+
+.divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border-ui);
+    margin: 0 8px;
+}
+
+.toolbar-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.view-mode {
+    font-size: 13px;
+    color: var(--text-ui);
+    cursor: pointer;
+}
+
+.publish-btn {
+    background: var(--accent-ui);
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* --- Workspace Container --- */
+.workspace-container {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+    padding: 24px;
+    padding-right: calc(var(--panel-width) + 24px);
+    /* Space for fixed panel */
+}
+
+/* --- Mock Website (Flipkart Style) --- */
+.mock-site {
+    background: white;
+    width: 100%;
+    max-width: 1200px;
+    min-height: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+/* E-commerce Generic Styles */
+.site-header {
+    background: var(--primary-web);
+    color: white;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    justify-content: space-between;
+    position: relative;
+}
+
+.site-logo {
+    font-size: 20px;
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: 0.5px;
+}
+
+.search-bar {
+    background: white;
+    padding: 0 16px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    width: 400px;
+    height: 36px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+}
+
+.search-bar button {
+    border: none;
+    background: none;
+    color: var(--primary-web);
+    cursor: pointer;
+}
+
+.header-nav {
+    display: flex;
+    gap: 30px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.hero-section {
+    padding: 16px;
+    background: #f1f3f6;
+    display: flex;
+    gap: 16px;
+    height: 280px;
+}
+
+.hero-content {
+    flex: 1;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+    align-items: flex-start;
+}
+
+.hero-content h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.hero-content p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.cta-btn {
+    background: #ff9f00;
+    /* Flipkart Orange for CTA */
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.hero-image {
+    flex: 1;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.img-placeholder {
+    font-size: 80px;
+    color: #e0e0e0;
+}
+
+.products-section {
+    padding: 24px;
+    background: white;
+    margin-top: 10px;
+    /* Separator block */
+}
+
+.products-section h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 12px;
+}
+
+.product-grid {
+    display: flex;
+    gap: 16px;
+}
+
+.product-card {
+    border: 1px solid #f0f0f0;
+    padding: 16px;
+    text-align: center;
+    flex: 1;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.card-img {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: #ccc;
+    margin-bottom: 12px;
+}
+
+.card-info h3 {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.card-info .price {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.card-info .offer {
+    color: #388e3c;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* --- Editor Overlays (The Magic) --- */
+.editable-element {
+    position: relative;
+    /* For absolute overlay positioning context inside? No, overlay acts on it */
+    /* In a real editor, the overlay is usually a separate sibling or a child. I'll make it a child for simplicity here */
+}
+
+.editable-element:hover {
+    outline: 2px solid rgba(0, 123, 255, 0.4) !important;
+    cursor: pointer;
+}
+
+/* Specific styling for the 'Selected' element simulation */
+.selected-element {
+    outline: 2px solid var(--accent-ui) !important;
+    z-index: 10;
+}
+
+.editor-overlay {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid var(--accent-ui);
+    pointer-events: none;
+    /* Let clicks pass through for demo mostly, or catch them */
+    display: none;
+    z-index: 50;
+}
+
+/* Show overlay on the header for demo */
+.site-header .editor-overlay {
+    display: block;
+}
+
+.resize-handle {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border: 1px solid var(--accent-ui);
+    position: absolute;
+    pointer-events: auto;
+}
+
+.handle-tl {
+    top: -5px;
+    left: -5px;
+    cursor: nw-resize;
+}
+
+.handle-tr {
+    top: -5px;
+    right: -5px;
+    cursor: ne-resize;
+}
+
+.handle-bl {
+    bottom: -5px;
+    left: -5px;
+    cursor: sw-resize;
+}
+
+.handle-br {
+    bottom: -5px;
+    right: -5px;
+    cursor: se-resize;
+}
+
+.edit-badge {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    background: var(--accent-ui);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* --- Properties Panel --- */
+.properties-panel {
+    position: fixed;
+    right: 0;
+    top: var(--toolbar-height);
+    bottom: 0;
+    width: var(--panel-width);
+    background: white;
+    border-left: 1px solid var(--border-ui);
+    overflow-y: auto;
+    z-index: 900;
+}
+
+.panel-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-ui);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.panel-header i {
+    color: #999;
+    cursor: pointer;
+}
+
+.panel-section {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: block;
+    letter-spacing: 0.5px;
+}
+
+.prop-row {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.prop-row:last-child {
+    margin-bottom: 0;
+}
+
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.three-col-icons {
+    display: flex;
+    justify-content: space-between;
+    background: #f5f5f5;
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.three-col-icons button {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #666;
+    border-radius: 2px;
+}
+
+.three-col-icons button.active {
+    background: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    color: #000;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--border-ui);
+    border-radius: 4px;
+    padding: 0 8px;
+    height: 30px;
+}
+
+.input-group span {
+    font-size: 11px;
+    color: #999;
+    margin-right: 6px;
+    user-select: none;
+}
+
+.input-group input,
+.panel-section select,
+.panel-section input[type="text"] {
+    border: none;
+    outline: none;
+    font-size: 12px;
+    width: 100%;
+    color: #333;
+    background: transparent;
+}
+
+/* Specialized Inputs */
+.panel-section select,
+.panel-section input[type="text"]:not(.input-group input) {
+    border: 1px solid var(--border-ui);
+    border-radius: 4px;
+    padding: 0 8px;
+    height: 30px;
+}
+
+.spacing-visualizer {
+    margin-top: 12px;
+    border: 1px dashed #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    background: #fafafa;
+}
+
+.margin-box {
+    border: 1px solid #ddd;
+    background: #e3f2fd;
+    /* Light blue */
+    padding: 16px;
+    position: relative;
+    border-radius: 2px;
+}
+
+.padding-box {
+    border: 1px solid #90caf9;
+    background: #fff3e0;
+    /* Light orange */
+    padding: 12px;
+    position: relative;
+    border-radius: 2px;
+}
+
+.content-box {
+    background: #e0e0e0;
+    width: 40px;
+    height: 20px;
+    border-radius: 2px;
+}
+
+.spacing-visualizer .label {
+    position: absolute;
+    font-size: 8px;
+    top: 2px;
+    left: 4px;
+    color: rgba(0, 0, 0, 0.4);
+}
+
+.color-picker-row {
+    border: 1px solid var(--border-ui);
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.color-preview {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin-right: 8px;
+}
+
+.opacity {
+    font-size: 11px;
+    color: #999;
+    margin-left: auto;
+    padding-right: 4px;
+}
+
+.add-effect-btn {
+    width: 100%;
+    border: 1px dashed var(--border-ui);
+    background: #fafafa;
+    color: #666;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.add-effect-btn:hover {
+    border-color: var(--accent-ui);
+    color: var(--accent-ui);
+}
