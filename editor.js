@@ -1,7 +1,9 @@
-/* Live Editor v3.0 - History (Undo/Redo) Support */
+/* Live Editor v3.6 - Keyboard Navigation & Multi-Selection */
 (function () {
     if (document.getElementById('live-editor-root')) {
-        alert('Live Editor is already active!');
+        const root = document.getElementById('live-editor-root');
+        if (root.style.display === 'none') root.style.display = 'block';
+        else root.style.display = 'none';
         return;
     }
 
@@ -9,51 +11,50 @@
     const state = {
         selection: [], mode: 'select', viewport: 'desktop',
         isDragging: false, isResizing: false, resizeHandle: null, startPos: { x: 0, y: 0 },
-        resizeSnapshot: null, moveSnapshot: null, dragStartStyles: [], // For Undo/Redo of DnD
-        activeColorProp: null, pickerStartStyles: [], // For Undo/Redo of Color
+        resizeSnapshot: null, moveSnapshot: null, dragStartStyles: [],
+        activeColorProp: null, pickerStartStyles: [],
         cp: { h: 0, s: 100, v: 100, isDraggingSV: false, isDraggingHue: false },
-
-        // History
-        history: [],
-        historyPtr: -1,
+        history: [], historyPtr: -1,
 
         record(cmd) {
-            // Remove any future history if we diverge
-            if (this.historyPtr < this.history.length - 1) {
-                this.history = this.history.slice(0, this.historyPtr + 1);
-            }
-            this.history.push(cmd);
-            this.historyPtr++;
-            if (this.history.length > 50) { this.history.shift(); this.historyPtr--; } // Limit stack
+            if (this.historyPtr < this.history.length - 1) this.history = this.history.slice(0, this.historyPtr + 1);
+            this.history.push(cmd); this.historyPtr++;
+            if (this.history.length > 50) { this.history.shift(); this.historyPtr--; }
         },
         undo() {
-            if (this.historyPtr >= 0) {
-                const cmd = this.history[this.historyPtr];
-                cmd.undo();
-                this.historyPtr--;
-                updateOverlays(); syncPanel();
-            }
+            if (this.historyPtr >= 0) { this.history[this.historyPtr].undo(); this.historyPtr--; updateOverlays(); syncPanel(); }
         },
         redo() {
-            if (this.historyPtr < this.history.length - 1) {
-                this.historyPtr++;
-                const cmd = this.history[this.historyPtr];
-                cmd.redo();
-                updateOverlays(); syncPanel();
-            }
+            if (this.historyPtr < this.history.length - 1) { this.historyPtr++; this.history[this.historyPtr].redo(); updateOverlays(); syncPanel(); }
         }
     };
 
-    // Helper: Snapshot Styles
     const snapshotStyles = (els) => els.map(el => ({ el, css: el.style.cssText }));
     const restoreStyles = (snap) => snap.forEach(item => { if (item.el && item.el.style) item.el.style.cssText = item.css; });
 
-    // --- 2. HTML Templates ---
-    const ICONS = {
-        select: 'fa-arrow-pointer', move: 'fa-up-down-left-right', text: 'fa-i-cursor', delete: 'fa-trash',
-        desktop: 'fa-desktop', tablet: 'fa-tablet-screen-button', mobile: 'fa-mobile-screen-button',
-        undo: 'fa-rotate-left', redo: 'fa-rotate-right'
+    // --- 2. Data Lists ---
+    const OPTIONS = {
+        fontFamily: ["Inter", "Roboto", "Arial", "Helvetica", "Times New Roman", "Georgia", "Courier New", "Verdana", "Impact"],
+        display: ["block", "flex", "grid", "inline-block", "inline", "none"],
+        position: ["static", "relative", "absolute", "fixed", "sticky"],
+        textAlign: ["left", "center", "right", "justify"],
+        fontWeight: ["normal", "bold", "100", "200", "300", "400", "500", "600", "700", "800", "900"]
     };
+
+    function createControl(label, prop, type = 'input') {
+        let inputHtml = '';
+        if (type === 'select' && OPTIONS[prop]) {
+            inputHtml = `<select class="le-select" id="le-p-${prop}" data-prop="${prop}">`;
+            OPTIONS[prop].forEach(opt => inputHtml += `<option value="${opt}">${opt}</option>`);
+            inputHtml += `</select>`;
+        } else {
+            inputHtml = `<input class="le-input" id="le-p-${prop}" data-prop="${prop}">`;
+        }
+        return `<div class="le-control-col"><span class="le-label">${label}</span>${inputHtml}</div>`;
+    }
+
+    // --- 3. HTML Templates ---
+    const ICONS = { select: 'fa-arrow-pointer', move: 'fa-up-down-left-right', text: 'fa-i-cursor', delete: 'fa-trash', desktop: 'fa-desktop', tablet: 'fa-tablet-screen-button', mobile: 'fa-mobile-screen-button', undo: 'fa-rotate-left', redo: 'fa-rotate-right' };
 
     const UI_TOOLBAR = `
     <div class="le-toolbar">
@@ -64,21 +65,21 @@
         <button class="le-icon-btn" id="le-tool-text" title="Text"><i class="fa-solid ${ICONS.text}"></i></button>
         <button class="le-icon-btn" id="le-tool-delete" title="Delete"><i class="fa-solid ${ICONS.delete}"></i></button>
         <div class="le-divider"></div>
-         <button class="le-icon-btn" id="le-tool-undo" title="Undo (Ctrl+Z)"><i class="fa-solid ${ICONS.undo}"></i></button>
-         <button class="le-icon-btn" id="le-tool-redo" title="Redo (Ctrl+Y)"><i class="fa-solid ${ICONS.redo}"></i></button>
+         <button class="le-icon-btn" id="le-tool-undo" title="Undo"><i class="fa-solid ${ICONS.undo}"></i></button>
+         <button class="le-icon-btn" id="le-tool-redo" title="Redo"><i class="fa-solid ${ICONS.redo}"></i></button>
         <div class="le-divider"></div>
         <button class="le-icon-btn" id="le-view-desktop" title="Desktop"><i class="fa-solid ${ICONS.desktop}"></i></button>
         <button class="le-icon-btn" id="le-view-tablet" title="Tablet"><i class="fa-solid ${ICONS.tablet}"></i></button>
         <button class="le-icon-btn" id="le-view-mobile" title="Mobile"><i class="fa-solid ${ICONS.mobile}"></i></button>
         <div class="le-divider"></div>
-        <button class="le-publish-btn" id="le-finish-btn" style="background:#2874f0;border:none;color:white;padding:0 16px;border-radius:6px;height:32px;font-size:12px;font-weight:600;cursor:pointer;">Done</button>
+        <button class="le-publish-btn" id="le-finish-btn" style="background:#111;border:none;color:white;padding:0 16px;border-radius:100px;height:32px;font-size:11px;font-weight:700;text-transform:uppercase;cursor:pointer;">Done</button>
     </div>`;
 
     const UI_SIDEBAR = `
     <div class="le-sidebar">
-        <div class="le-sidebar-header">
-            <h3>Workbench</h3>
-            <i class="fa-solid fa-xmark" id="le-close-panel" style="cursor:pointer;color:#999;"></i>
+        <div class="le-sidebar-header" id="le-panel-header" title="Click to Collapse/Expand">
+            <h3>Properties</h3>
+            <i class="fa-solid fa-chevron-down le-toggle-icon" id="le-panel-toggle"></i>
         </div>
         <div class="le-scroll-area">
             <div class="le-block-title">Add Elements</div>
@@ -91,23 +92,23 @@
                 <div class="le-component-btn" data-type="card"><i class="fa-regular fa-address-card"></i><span>Card</span></div>
             </div>
 
-            <div class="le-block-title" style="border-top:1px solid #f0f0f0;">Properties</div>
+            <div class="le-block-title" style="border-top:1px solid #e0e0e0;">Properties</div>
             <div class="le-inspector-box">
                 <div class="le-control-row">
-                    <div class="le-control-col"><span class="le-label">W</span><input class="le-input" id="le-p-width" data-prop="width"></div>
-                    <div class="le-control-col"><span class="le-label">H</span><input class="le-input" id="le-p-height" data-prop="height"></div>
+                    ${createControl('W', 'width')}
+                    ${createControl('H', 'height')}
                 </div>
                  <div class="le-control-row">
-                    <div class="le-control-col"><span class="le-label">Display</span><input class="le-input" id="le-p-display" data-prop="display"></div>
-                    <div class="le-control-col"><span class="le-label">Position</span><input class="le-input" id="le-p-position" data-prop="position"></div>
+                    ${createControl('Display', 'display', 'select')}
+                    ${createControl('Position', 'position', 'select')}
                 </div>
                  <div class="le-control-row">
-                    <div class="le-control-col"><span class="le-label">Margin</span><input class="le-input" id="le-p-margin" data-prop="margin"></div>
-                    <div class="le-control-col"><span class="le-label">Padding</span><input class="le-input" id="le-p-padding" data-prop="padding"></div>
+                    ${createControl('Margin', 'margin')}
+                    ${createControl('Padding', 'padding')}
                 </div>
-                <div class="le-control-col"><span class="le-label">Font Family</span><input class="le-input" id="le-p-fontFamily" data-prop="fontFamily"></div>
+                ${createControl('Font Family', 'fontFamily', 'select')}
                 <div class="le-control-row">
-                    <div class="le-control-col"><span class="le-label">Size</span><input class="le-input" id="le-p-fontSize" data-prop="fontSize"></div>
+                    ${createControl('Size', 'fontSize')}
                     <div class="le-control-col"><span class="le-label">Color</span>
                          <div class="le-color-wrap" id="le-trig-color" style="cursor:pointer">
                             <div class="le-color-preview" id="le-pv-color"></div>
@@ -116,8 +117,8 @@
                     </div>
                 </div>
                 <div class="le-control-row">
-                    <div class="le-control-col"><span class="le-label">Align</span><input class="le-input" id="le-p-textAlign" data-prop="textAlign"></div>
-                    <div class="le-control-col"><span class="le-label">Weight</span><input class="le-input" id="le-p-fontWeight" data-prop="fontWeight"></div>
+                    ${createControl('Align', 'textAlign', 'select')}
+                    ${createControl('Weight', 'fontWeight', 'select')}
                 </div>
                  <div class="le-control-col"><span class="le-label">Background</span>
                     <div class="le-color-wrap" id="le-trig-bg" style="cursor:pointer">
@@ -126,16 +127,16 @@
                     </div>
                  </div>
                  <div class="le-control-row">
-                    <div class="le-control-col"><span class="le-label">Radius</span><input class="le-input" id="le-p-borderRadius" data-prop="borderRadius"></div>
-                    <div class="le-control-col"><span class="le-label">Opacity</span><input class="le-input" id="le-p-opacity" data-prop="opacity"></div>
+                    ${createControl('Radius', 'borderRadius')}
+                    ${createControl('Opacity', 'opacity')}
                 </div>
-                 <div class="le-control-col"><span class="le-label">Border</span><input class="le-input" id="le-p-border" data-prop="border"></div>
-                 <div class="le-control-col"><span class="le-label">Shadow</span><input class="le-input" id="le-p-boxShadow" data-prop="boxShadow"></div>
+                 ${createControl('Border', 'border')}
+                 ${createControl('Shadow', 'boxShadow')}
             </div>
         </div>
     </div>`;
 
-    // --- 3. Build UI ---
+    // --- 4. Build UI ---
     const root = document.createElement('div');
     root.id = 'live-editor-root';
     root.innerHTML = UI_TOOLBAR + UI_SIDEBAR;
@@ -181,7 +182,6 @@
         const fa = document.createElement('link'); fa.rel = 'stylesheet'; fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'; document.head.appendChild(fa);
     }
 
-    // --- 4. Logic: Color Picker ---
     function hsvToRgb(h, s, v) {
         let r, g, b, i, f, p, q, t; h /= 360; s /= 100; v /= 100; i = Math.floor(h * 6); f = h * 6 - i; p = v * (1 - s); q = v * (1 - f * s); t = v * (1 - (1 - f) * s);
         switch (i % 6) { case 0: r = v, g = t, b = p; break; case 1: r = q, g = v, b = p; break; case 2: r = p, g = v, b = t; break; case 3: r = p, g = q, b = v; break; case 4: r = t, g = p, b = v; break; case 5: r = v, g = p, b = q; break; }
@@ -205,24 +205,14 @@
         const rgb = hsvToRgb(state.cp.h, state.cp.s, state.cp.v); const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
         preview.style.backgroundColor = hex; hexInput.value = hex;
         if (state.activeColorProp) {
-            // In Color Picker, we only Preview. Interaction 'commits' via MouseUp or OK is handled separately for History.
-            // But to show live changes we must apply.
-            // HISTORY FIX: We saved 'pickerStartStyles' on open/mousedown. We will use that if we cancel (not imp yet) or for UNDO.
-            // For now, apply live.
             applyProp(state.activeColorProp, hex, false);
             document.getElementById(`le-p-${state.activeColorProp}`).value = hex;
         }
     }
 
-    // Color Mouse Interaction
-    function handleColorMouseDown(e) {
-        state.pickerStartStyles = snapshotStyles(state.selection); // Capture state before dragging color
-    }
+    function handleColorMouseDown(e) { state.pickerStartStyles = snapshotStyles(state.selection); }
     function handleColorMouseUp() {
-        // Commit History on Color Drag End
-        const before = state.pickerStartStyles;
-        const after = snapshotStyles(state.selection);
-        // Only if different
+        const before = state.pickerStartStyles; const after = snapshotStyles(state.selection);
         if (before.length && JSON.stringify(before.map(x => x.css)) !== JSON.stringify(after.map(x => x.css))) {
             state.record({ undo: () => restoreStyles(before), redo: () => restoreStyles(after) });
         }
@@ -234,13 +224,12 @@
 
     function updateSV(e) { const r = svBox.getBoundingClientRect(); let x = e.clientX - r.left, y = e.clientY - r.top; x = Math.max(0, Math.min(x, r.width)); y = Math.max(0, Math.min(y, r.height)); state.cp.s = (x / r.width) * 100; state.cp.v = 100 - ((y / r.height) * 100); updatePickerUI(); }
     function updateHue(e) { const r = hueBox.getBoundingClientRect(); let y = e.clientY - r.top; y = Math.max(0, Math.min(y, r.height)); state.cp.h = (y / r.height) * 360; updatePickerUI(); }
-
     document.addEventListener('mousemove', (e) => { if (state.cp.isDraggingSV) { e.preventDefault(); updateSV(e); } if (state.cp.isDraggingHue) { e.preventDefault(); updateHue(e); } });
     document.addEventListener('mouseup', handleColorMouseUp);
 
     function openColorPicker(p) {
         state.activeColorProp = p;
-        state.pickerStartStyles = snapshotStyles(state.selection); // Snapshot initial
+        state.pickerStartStyles = snapshotStyles(state.selection);
         const c = document.getElementById(`le-p-${p}`).value; const r = hexToRgb(c) || { r: 255, g: 0, b: 0 }; const h = rgbToHsv(r.r, r.g, r.b); state.cp.h = h.h; state.cp.s = h.s; state.cp.v = h.v;
         updatePickerUI(); colorPicker.style.display = 'block'; colorPicker.style.top = '100px'; colorPicker.style.right = '320px';
     }
@@ -249,18 +238,11 @@
     document.getElementById('le-cp-close').addEventListener('click', () => colorPicker.style.display = 'none');
 
     hexInput.addEventListener('change', e => {
-        // Manually typing hex
-        const oldState = snapshotStyles(state.selection);
-        const r = hexToRgb(e.target.value);
-        if (r) {
-            const h = rgbToHsv(r.r, r.g, r.b); state.cp.h = h.h; state.cp.s = h.s; state.cp.v = h.v;
-            updatePickerUI();
-            const newState = snapshotStyles(state.selection);
-            state.record({ undo: () => restoreStyles(oldState), redo: () => restoreStyles(newState) });
-        }
+        const oldState = snapshotStyles(state.selection); const r = hexToRgb(e.target.value);
+        if (r) { const h = rgbToHsv(r.r, r.g, r.b); state.cp.h = h.h; state.cp.s = h.s; state.cp.v = h.v; updatePickerUI(); const newState = snapshotStyles(state.selection); state.record({ undo: () => restoreStyles(oldState), redo: () => restoreStyles(newState) }); }
     });
 
-    // --- 5. Main Editor Helpers ---
+    // --- 6. Main Editor Helpers ---
     function setViewport(v) {
         state.viewport = v; document.querySelectorAll('[id^="le-view-"]').forEach(b => b.classList.remove('active')); document.getElementById(`le-view-${v}`).classList.add('active');
         const doc = document.documentElement; doc.style.maxWidth = ''; doc.style.margin = ''; doc.style.border = '';
@@ -271,18 +253,18 @@
 
     function updateOverlays() {
         overlays.innerHTML = ''; if (state.selection.length === 0) return;
-        // Verify connectivity
         state.selection = state.selection.filter(el => document.body.contains(el));
         if (state.selection.length === 0) { syncPanel(); return; }
 
         let rect;
+        // Calculate Bounding Box for Group Selection
         if (state.selection.length === 1) rect = state.selection[0].getBoundingClientRect();
         else {
             let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
             state.selection.forEach(el => { const r = el.getBoundingClientRect(); if (r.left < minX) minX = r.left; if (r.top < minY) minY = r.top; if (r.right > maxX) maxX = r.right; if (r.bottom > maxY) maxY = r.bottom; });
             rect = { left: minX, top: minY, width: maxX - minX, height: maxY - minY };
         }
-        if (rect) {
+        if (rect && rect.width > 0 && rect.height > 0) {
             const div = document.createElement('div'); div.className = 'le-selection-box';
             Object.assign(div.style, { top: rect.top + 'px', left: rect.left + 'px', width: rect.width + 'px', height: rect.height + 'px' });
             div.innerHTML = `
@@ -309,7 +291,17 @@
         }
         const el = state.selection[state.selection.length - 1]; if (!el) return; const s = window.getComputedStyle(el);
         PROPS.forEach(p => {
-            const i = document.getElementById(`le-p-${p}`); if (i && !i.readOnly) i.value = s[p];
+            const i = document.getElementById(`le-p-${p}`);
+            if (i) {
+                if (i.tagName === 'SELECT') {
+                    let val = s[p];
+                    if (p === 'fontWeight') { if (val === '400') val = 'normal'; if (val === '700') val = 'bold'; }
+                    if (p === 'fontFamily') val = val.replace(/['"]/g, '');
+                    i.value = val;
+                } else {
+                    i.value = s[p];
+                }
+            }
             if (p === 'backgroundColor') { const v = s[p]; document.getElementById('le-pv-backgroundColor').style.background = v; document.getElementById('le-p-backgroundColor').value = rgbToHexParsed(v) || v; }
             if (p === 'color') { const v = s[p]; document.getElementById('le-pv-color').style.background = v; document.getElementById('le-p-color').value = rgbToHexParsed(v) || v; }
         });
@@ -317,29 +309,20 @@
     function rgbToHexParsed(h) { if (!h || h.indexOf('rgb') === -1) return h; const c = h.match(/\d+/g).map(Number); return "#" + ((1 << 24) + (c[0] << 16) + (c[1] << 8) + c[2]).toString(16).slice(1).toUpperCase(); }
 
     function applyProp(p, v, record = true) {
-        if (record) {
-            const before = snapshotStyles(state.selection);
-            state.selection.forEach(el => el.style[p] = v);
-            const after = snapshotStyles(state.selection);
-            state.record({ undo: () => restoreStyles(before), redo: () => restoreStyles(after) });
-        } else {
-            state.selection.forEach(el => el.style[p] = v);
-        }
+        if (record) { const before = snapshotStyles(state.selection); state.selection.forEach(el => el.style[p] = v); const after = snapshotStyles(state.selection); state.record({ undo: () => restoreStyles(before), redo: () => restoreStyles(after) }); } else { state.selection.forEach(el => el.style[p] = v); }
         updateOverlays();
         if (p === 'backgroundColor') document.getElementById('le-pv-backgroundColor').style.background = v;
         if (p === 'color') document.getElementById('le-pv-color').style.background = v;
     }
 
-    // Sidebar Input Changes (Manual Entry)
-    document.querySelectorAll('.le-input').forEach(input => {
+    // Sidebar Input & Select Changes
+    document.querySelectorAll('.le-input, .le-select').forEach(input => {
         if (input.dataset.prop) {
             let startVal = '';
             input.addEventListener('focus', () => { startVal = snapshotStyles(state.selection); });
             input.addEventListener('change', (e) => {
-                // Apply Change
                 const prop = input.dataset.prop;
                 state.selection.forEach(el => el.style[prop] = e.target.value);
-                // Record
                 const endVal = snapshotStyles(state.selection);
                 state.record({ undo: () => restoreStyles(startVal), redo: () => restoreStyles(endVal) });
                 updateOverlays();
@@ -356,119 +339,44 @@
         if (el) {
             el.style.position = 'absolute'; el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.zIndex = '1000';
             document.body.appendChild(el);
-
-            // HISTORY: Add Element
-            const addedEl = el;
-            state.record({
-                undo: () => { addedEl.remove(); state.selection = []; updateOverlays(); },
-                redo: () => { document.body.appendChild(addedEl); state.selection = [addedEl]; updateOverlays(); }
-            });
-
+            const addedEl = el; state.record({ undo: () => { addedEl.remove(); state.selection = []; updateOverlays(); }, redo: () => { document.body.appendChild(addedEl); state.selection = [addedEl]; updateOverlays(); } });
             state.selection = [el]; setMode('move'); updateOverlays();
         }
     }
 
     function deleteSelection() {
         if (state.selection.length === 0) return;
-
-        // Structure for Restore: { el, parent, sibling }
-        const deletedItems = state.selection.map(el => ({
-            el: el,
-            parent: el.parentNode,
-            sibling: el.nextSibling,
-            display: el.style.display // Sometimes simple remove is enough, but tracking parent is safer
-        }));
-
+        const deletedItems = state.selection.map(el => ({ el: el, parent: el.parentNode, sibling: el.nextSibling, display: el.style.display }));
         state.selection.forEach(el => el.remove());
-
-        state.record({
-            undo: () => {
-                deletedItems.forEach(item => {
-                    if (item.sibling) item.parent.insertBefore(item.el, item.sibling);
-                    else item.parent.appendChild(item.el);
-                });
-                state.selection = deletedItems.map(x => x.el);
-                updateOverlays();
-            },
-            redo: () => {
-                deletedItems.forEach(item => item.el.remove());
-                state.selection = [];
-                updateOverlays();
-            }
-        });
-
+        state.record({ undo: () => { deletedItems.forEach(item => { if (item.sibling) item.parent.insertBefore(item.el, item.sibling); else item.parent.appendChild(item.el); }); state.selection = deletedItems.map(x => x.el); updateOverlays(); }, redo: () => { deletedItems.forEach(item => item.el.remove()); state.selection = []; updateOverlays(); } });
         state.selection = []; updateOverlays();
     }
 
     document.querySelectorAll('.le-component-btn').forEach(b => {
         b.addEventListener('click', () => {
-            if (b.dataset.type === 'img') showImageDialog(s => {
-                const e = document.createElement('img'); e.src = s; e.style.width = '300px'; e.style.position = 'absolute'; e.style.left = (window.scrollX + window.innerWidth / 2) + 'px'; e.style.top = (window.scrollY + window.innerHeight / 2) + 'px';
-                document.body.appendChild(e);
-                // History for Img
-                const addedEl = e;
-                state.record({ undo: () => addedEl.remove(), redo: () => { document.body.appendChild(addedEl); state.selection = [addedEl]; updateOverlays(); } });
-                state.selection = [e]; setMode('move'); updateOverlays();
-            }); else addElement(b.dataset.type);
+            if (b.dataset.type === 'img') showImageDialog(s => { const e = document.createElement('img'); e.src = s; e.style.width = '300px'; e.style.position = 'absolute'; e.style.left = (window.scrollX + window.innerWidth / 2) + 'px'; e.style.top = (window.scrollY + window.innerHeight / 2) + 'px'; document.body.appendChild(e); const addedEl = e; state.record({ undo: () => addedEl.remove(), redo: () => { document.body.appendChild(addedEl); state.selection = [addedEl]; updateOverlays(); } }); state.selection = [e]; setMode('move'); updateOverlays(); }); else addElement(b.dataset.type);
         });
     });
     function showImageDialog(cb) { const s = prompt("Image URL:"); if (s) cb(s); }
 
     function setMode(m) { state.mode = m; document.querySelectorAll('.le-icon-btn').forEach(b => b.classList.remove('active')); const t = document.getElementById(`le-tool-${m}`); if (t) t.classList.add('active'); state.selection.forEach(el => el.contentEditable = 'false'); }
 
-    // --- REFINED RESIZE LOGIC w/ HISTORY ---
     document.addEventListener('mousedown', (e) => {
-        if (e.target.classList.contains('le-resize-handle')) {
-            e.preventDefault(); e.stopPropagation();
-            state.isResizing = true;
-            state.resizeHandle = e.target.dataset.dir;
-            state.startPos = { x: e.clientX, y: e.clientY };
-            state.dragStartStyles = snapshotStyles(state.selection); // Capture START state
-
-            // For live calc
-            state.resizeSnapshot = {
-                items: state.selection.map(el => {
-                    const s = window.getComputedStyle(el); const mat = new WebKitCSSMatrix(s.transform);
-                    return { el: el, sW: parseFloat(s.width), sH: parseFloat(s.height), sTx: mat.m41, sTy: mat.m42 };
-                })
-            };
-            return;
-        }
+        if (e.target.classList.contains('le-resize-handle')) { e.preventDefault(); e.stopPropagation(); state.isResizing = true; state.resizeHandle = e.target.dataset.dir; state.startPos = { x: e.clientX, y: e.clientY }; state.dragStartStyles = snapshotStyles(state.selection); state.resizeSnapshot = { items: state.selection.map(el => { const s = window.getComputedStyle(el); const mat = new WebKitCSSMatrix(s.transform); return { el: el, sW: parseFloat(s.width), sH: parseFloat(s.height), sTx: mat.m41, sTy: mat.m42 }; }) }; return; }
         if (root.contains(e.target) || overlays.contains(e.target) || document.getElementById('le-color-picker')?.contains(e.target)) return;
-        if (state.mode === 'move' && state.selection.includes(e.target)) {
-            e.preventDefault(); state.isDragging = true; state.startPos = { x: e.clientX, y: e.clientY };
-            state.dragStartStyles = snapshotStyles(state.selection); // Capture START state
-            state.moveSnapshot = state.selection.map(el => ({ el, sx: new WebKitCSSMatrix(window.getComputedStyle(el).transform).m41, sy: new WebKitCSSMatrix(window.getComputedStyle(el).transform).m42 }));
-        }
+        if (state.mode === 'move' && state.selection.includes(e.target)) { e.preventDefault(); state.isDragging = true; state.startPos = { x: e.clientX, y: e.clientY }; state.dragStartStyles = snapshotStyles(state.selection); state.moveSnapshot = state.selection.map(el => ({ el, sx: new WebKitCSSMatrix(window.getComputedStyle(el).transform).m41, sy: new WebKitCSSMatrix(window.getComputedStyle(el).transform).m42 })); }
     }, true);
 
     document.addEventListener('mousemove', (e) => {
         if (state.isResizing) {
             const dx = e.clientX - state.startPos.x; const dy = e.clientY - state.startPos.y; const dir = state.resizeHandle;
-            state.resizeSnapshot.items.forEach(it => {
-                let newW = it.sW, newH = it.sH, newTx = it.sTx, newTy = it.sTy;
-                if (dir.includes('e')) { newW = it.sW + dx; }
-                if (dir.includes('w')) { newW = it.sW - dx; newTx = it.sTx + dx; }
-                if (dir.includes('s')) { newH = it.sH + dy; }
-                if (dir.includes('n')) { newH = it.sH - dy; newTy = it.sTy + dy; }
-                if (newW < 10) newW = 10; if (newH < 10) newH = 10;
-                it.el.style.width = newW + 'px'; it.el.style.height = newH + 'px'; it.el.style.transform = `translate(${newTx}px, ${newTy}px)`;
-            });
-            updateOverlays(); syncPanel(); return;
+            state.resizeSnapshot.items.forEach(it => { let newW = it.sW, newH = it.sH, newTx = it.sTx, newTy = it.sTy; if (dir.includes('e')) { newW = it.sW + dx; } if (dir.includes('w')) { newW = it.sW - dx; newTx = it.sTx + dx; } if (dir.includes('s')) { newH = it.sH + dy; } if (dir.includes('n')) { newH = it.sH - dy; newTy = it.sTy + dy; } if (newW < 10) newW = 10; if (newH < 10) newH = 10; it.el.style.width = newW + 'px'; it.el.style.height = newH + 'px'; it.el.style.transform = `translate(${newTx}px, ${newTy}px)`; }); updateOverlays(); syncPanel(); return;
         }
-
         if (state.isDragging) { const dx = e.clientX - state.startPos.x; const dy = e.clientY - state.startPos.y; state.moveSnapshot.forEach(it => { it.el.style.transform = `translate(${it.sx + dx}px,${it.sy + dy}px)`; }); updateOverlays(); }
     });
 
     document.addEventListener('mouseup', () => {
-        if (state.isDragging || state.isResizing) {
-            // Commit History
-            const before = state.dragStartStyles;
-            const after = snapshotStyles(state.selection);
-            if (before.length && JSON.stringify(before.map(x => x.css)) !== JSON.stringify(after.map(x => x.css))) {
-                state.record({ undo: () => restoreStyles(before), redo: () => restoreStyles(after) });
-            }
-        }
+        if (state.isDragging || state.isResizing) { const before = state.dragStartStyles; const after = snapshotStyles(state.selection); if (before.length && JSON.stringify(before.map(x => x.css)) !== JSON.stringify(after.map(x => x.css))) { state.record({ undo: () => restoreStyles(before), redo: () => restoreStyles(after) }); } }
         state.isDragging = false; state.isResizing = false;
     });
 
@@ -483,31 +391,45 @@
     }, true);
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Delete' || e.key === 'Backspace') {
-            if (!['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) && !document.activeElement.isContentEditable) {
-                deleteSelection();
+        if (e.key === 'Delete' || e.key === 'Backspace') { if (!['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) && !document.activeElement.isContentEditable) { deleteSelection(); } }
+
+        // --- MULTI-SELECT TRAVERSAL ---
+        if (e.shiftKey && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            e.preventDefault();
+            if (state.selection.length === 0) return;
+
+            const lastEl = state.selection[state.selection.length - 1];
+            let nextEl = null;
+
+            if (e.key === 'ArrowRight') nextEl = lastEl.nextElementSibling;
+            if (e.key === 'ArrowLeft') nextEl = lastEl.previousElementSibling;
+            if (e.key === 'ArrowUp') nextEl = lastEl.parentElement;
+            if (e.key === 'ArrowDown') nextEl = lastEl.firstElementChild;
+
+            // Ensure we don't pick editor UI
+            if (nextEl && nextEl.nodeType === 1 && !root.contains(nextEl) && !overlays.contains(nextEl) && nextEl.id !== 'le-color-picker') {
+                if (!state.selection.includes(nextEl)) {
+                    state.selection.push(nextEl);
+                    updateOverlays();
+                    syncPanel();
+                }
             }
         }
-        // Undo / Redo
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
-            e.preventDefault();
-            if (e.shiftKey) state.redo();
-            else state.undo();
-        }
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
-            e.preventDefault();
-            state.redo();
-        }
+
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) state.redo(); else state.undo(); }
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); state.redo(); }
     });
     window.addEventListener('scroll', updateOverlays, true); window.addEventListener('resize', updateOverlays); document.addEventListener('dragstart', e => e.preventDefault(), true);
 
     document.getElementById('le-tool-delete').addEventListener('click', () => { if (state.selection.length > 0) { deleteSelection(); } else setMode('delete'); });
     document.getElementById('le-tool-undo').addEventListener('click', () => state.undo());
     document.getElementById('le-tool-redo').addEventListener('click', () => state.redo());
-
     ['select', 'move', 'text'].forEach(m => document.getElementById(`le-tool-${m}`).addEventListener('click', () => setMode(m)));
     ['desktop', 'tablet', 'mobile'].forEach(v => document.getElementById(`le-view-${v}`).addEventListener('click', () => setViewport(v)));
     document.getElementById('le-finish-btn').addEventListener('click', () => { root.remove(); overlays.remove(); document.documentElement.style = ''; document.getElementById('le-color-picker')?.remove(); });
-    document.getElementById('le-close-panel').addEventListener('click', () => document.querySelector('.le-sidebar').style.display = 'none');
+
+    document.getElementById('le-panel-header').addEventListener('click', () => {
+        document.querySelector('.le-sidebar').classList.toggle('collapsed');
+    });
 
 })();

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Website Live Editor</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -36,25 +36,26 @@
         </div>
     </div>
 
-    <!-- Main Workspace (Mock E-commerce Site) -->
+    <!-- Main Workspace -->
     <div class="workspace-container">
 
-        <!-- Mock Website Content -->
+        <!-- Mock Website Content (Matches Reference Image Theme) -->
         <main class="mock-site">
             <!-- Header -->
             <header class="site-header editable-element selected-element">
-                <div class="site-logo editable-element">ShopKart</div>
+                <div class="site-logo editable-element">DesignCourse</div>
                 <div class="search-bar editable-element">
-                    <input type="text" placeholder="Search for products, brands and more">
+                    <input type="text" placeholder="Search for courses, mentors, articles...">
                     <button><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
                 <div class="header-nav editable-element">
+                    <span>Courses</span>
+                    <span>Mentorship</span>
+                    <span>Pricing</span>
                     <span>Login</span>
-                    <span>More</span>
-                    <span><i class="fa-solid fa-cart-shopping"></i> Cart</span>
                 </div>
 
-                <!-- Editor Overlay (Selection UI) -->
+                <!-- Editor Overlay -->
                 <div class="editor-overlay">
                     <div class="resize-handle handle-tl"></div>
                     <div class="resize-handle handle-tr"></div>
@@ -64,48 +65,53 @@
                 </div>
             </header>
 
-            <!-- Hero Section -->
+            <!-- Hero Section (Reference Image Replica) -->
             <section class="hero-section editable-element">
                 <div class="hero-content">
-                    <h1>Big Summer Sale</h1>
-                    <p>Up to 80% off on top brands</p>
-                    <button class="cta-btn editable-element">Shop Now</button>
+                    <span class="hero-badge">Appreciation</span>
+                    <h1>You Didn't Just <br>Join. You <br>Believed.</h1>
+                    <p>To every creative who took the leap,<br>we see your courage, we value your trust.</p>
+                    <p style="font-size:12px; color:#888; margin-top:-10px; font-weight:500;">This Is More Than A Class.
+                        It’s A Movement.</p>
+                    <div style="margin-top:20px;">
+                        <button class="cta-btn editable-element"><i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
                 </div>
                 <div class="hero-image">
-                    <!-- Placeholder visual for electronics -->
-                    <div class="img-placeholder"><i class="fa-solid fa-headphones-simple"></i></div>
+                    <!-- Compass placeholder -->
+                    <div class="img-placeholder"><i class="fa-regular fa-compass"></i></div>
                 </div>
             </section>
 
             <!-- Product Grid -->
             <section class="products-section editable-element">
-                <h2>Best of Electronics</h2>
+                <h2>Latest Curriculum</h2>
                 <div class="product-grid">
-                    <!-- Product Card 1 -->
+                    <!-- Card 1 -->
                     <div class="product-card editable-element">
-                        <div class="card-img"><i class="fa-solid fa-camera"></i></div>
+                        <div class="card-img"><i class="fa-solid fa-pen-ruler"></i></div>
                         <div class="card-info">
-                            <h3>DSLR Camera</h3>
-                            <p class="price">$499</p>
-                            <span class="offer">Min 40% Off</span>
+                            <h3>UI/UX Masterclass</h3>
+                            <p class="price">$149</p>
+                            <span class="offer">Best Seller</span>
                         </div>
                     </div>
-                    <!-- Product Card 2 -->
+                    <!-- Card 2 -->
                     <div class="product-card editable-element">
-                        <div class="card-img"><i class="fa-solid fa-laptop"></i></div>
+                        <div class="card-img"><i class="fa-solid fa-vector-square"></i></div>
                         <div class="card-info">
-                            <h3>Gaming Laptop</h3>
-                            <p class="price">$1299</p>
-                            <span class="offer">Min 20% Off</span>
+                            <h3>Advanced Motion</h3>
+                            <p class="price">$199</p>
+                            <span class="offer">New</span>
                         </div>
                     </div>
-                    <!-- Product Card 3 -->
+                    <!-- Card 3 -->
                     <div class="product-card editable-element">
-                        <div class="card-img"><i class="fa-solid fa-mobile-screen"></i></div>
+                        <div class="card-img"><i class="fa-solid fa-code"></i></div>
                         <div class="card-info">
-                            <h3>Smartphone 5G</h3>
-                            <p class="price">$299</p>
-                            <span class="offer">New Launch</span>
+                            <h3>Frontend Dev</h3>
+                            <p class="price">$129</p>
+                            <span class="offer">Popular</span>
                         </div>
                     </div>
                 </div>
@@ -174,10 +180,10 @@
             </div>
             <div class="prop-row two-col">
                 <select>
+                    <option>ExtraBold</option>
                     <option>Regular</option>
-                    <option>Bold</option>
                 </select>
-                <input type="text" value="16px">
+                <input type="text" value="56px">
             </div>
             <div class="prop-row three-col-icons">
                 <button class="active"><i class="fa-solid fa-align-left"></i></button>
@@ -189,8 +195,8 @@
         <div class="panel-section">
             <label class="section-label">Fill</label>
             <div class="prop-row color-picker-row">
-                <div class="color-preview" id="prop-color-preview" style="background: #2874f0;"></div>
-                <input type="text" id="prop-color" value="#2874f0">
+                <div class="color-preview" id="prop-color-preview" style="background: #111;"></div>
+                <input type="text" id="prop-color" value="#111111">
                 <span class="opacity">100%</span>
             </div>
         </div>
@@ -198,13 +204,13 @@
         <div class="panel-section">
             <label class="section-label">Border</label>
             <div class="prop-row two-col">
-                <input type="text" value="0px">
-                <div class="color-preview" style="background: #000;"></div>
+                <input type="text" value="1px">
+                <div class="color-preview" style="background: #e0e0e0;"></div>
             </div>
             <div class="prop-row">
                 <div class="input-group">
                     <span>Radius</span>
-                    <input type="text" value="4px">
+                    <input type="text" value="0px">
                 </div>
             </div>
         </div>

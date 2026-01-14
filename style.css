@@ -1,13 +1,26 @@
 /* CSS Variables for Theme */
 :root {
-    --primary-web: #2874f0;
-    /* Flipkart Blue */
-    --accent-ui: #007bff;
-    /* Editor Blue */
-    --bg-ui: #ffffff;
-    --border-ui: #e0e0e0;
-    --text-ui: #333333;
-    --text-muted: #757575;
+    /* Theme Colors extracted from Image */
+    --primary-web: #ff4d4d;
+    /* Fallback Red */
+    --primary-gradient: linear-gradient(135deg, #ff3b30, #ff9500);
+    /* Lava Red-Orange */
+
+    --accent-ui: #ff3b30;
+    /* Active Elements Red */
+
+    --bg-ui: #f2f2f2;
+    /* Light Technical Grey */
+    --bg-panel: #ffffff;
+
+    --border-ui: #d1d1d1;
+    /* Sharper Technical Border */
+
+    --text-heading: #111111;
+    /* Stark Black */
+    --text-body: #555555;
+    /* Technical Grey */
+
     --panel-width: 280px;
     --toolbar-height: 50px;
 }
@@ -19,8 +32,9 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f1f3f6;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-ui);
+    color: var(--text-heading);
     /* Fixed size for Chrome Extension Popup */
     width: 780px;
     height: 580px;
@@ -34,23 +48,24 @@ body {
 /* --- Top Toolbar --- */
 .toolbar-top {
     height: var(--toolbar-height);
-    background: var(--bg-ui);
+    background: #ffffff;
     border-bottom: 1px solid var(--border-ui);
     display: flex;
     align-items: center;
     padding: 0 16px;
     justify-content: space-between;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     z-index: 1000;
 }
 
 .toolbar-brand {
-    font-weight: 600;
-    color: var(--text-ui);
+    font-weight: 700;
+    color: var(--text-heading);
     font-size: 14px;
+    letter-spacing: -0.5px;
     display: flex;
     align-items: center;
     gap: 8px;
+    text-transform: uppercase;
 }
 
 .toolbar-brand i {
@@ -65,10 +80,10 @@ body {
 
 .tool-btn {
     background: none;
-    border: none;
+    border: 1px solid transparent;
     padding: 6px 10px;
     border-radius: 4px;
-    color: var(--text-ui);
+    color: var(--text-body);
     cursor: pointer;
     font-size: 14px;
     transition: all 0.2s;
@@ -78,12 +93,15 @@ body {
 }
 
 .tool-btn:hover {
-    background: #f5f5f5;
+    background: #eeeeee;
+    color: #000;
 }
 
 .tool-btn.active {
-    background: #e6f0ff;
+    background: rgba(255, 59, 48, 0.08);
     color: var(--accent-ui);
+    border-color: rgba(255, 59, 48, 0.2);
+    font-weight: 600;
 }
 
 .divider {
@@ -100,23 +118,28 @@ body {
 }
 
 .view-mode {
-    font-size: 13px;
-    color: var(--text-ui);
+    font-size: 12px;
+    color: var(--text-body);
     cursor: pointer;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .publish-btn {
-    background: var(--accent-ui);
+    background: var(--text-heading);
     color: white;
     border: none;
     padding: 6px 16px;
     border-radius: 4px;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 600;
     cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-/* --- Workspace Container --- */
+/* --- Workspace Container (Grid Background) --- */
 .workspace-container {
     flex: 1;
     position: relative;
@@ -125,76 +148,91 @@ body {
     overflow: auto;
     padding: 24px;
     padding-right: calc(var(--panel-width) + 24px);
-    /* Space for fixed panel */
+
+    /* Technical Grid Theme matching image */
+    background-color: #f0f0f0;
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    background-size: 80px 80px;
 }
 
-/* --- Mock Website (Flipkart Style) --- */
+/* --- Mock Website Content --- */
 .mock-site {
-    background: white;
+    background: #ffffff;
+    /* Clean white card look */
     width: 100%;
     max-width: 1200px;
     min-height: 100%;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    /* Soft shadow */
     position: relative;
+    border: 1px solid #e0e0e0;
 }
 
 /* E-commerce Generic Styles */
 .site-header {
-    background: var(--primary-web);
-    color: white;
-    height: 60px;
+    background: #ffffff;
+    color: var(--text-heading);
+    height: 70px;
     display: flex;
     align-items: center;
     padding: 0 40px;
     justify-content: space-between;
     position: relative;
+    border-bottom: 1px solid #eeeeee;
 }
 
 .site-logo {
     font-size: 20px;
-    font-weight: 700;
-    font-style: italic;
-    letter-spacing: 0.5px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #000;
 }
 
 .search-bar {
-    background: white;
+    background: #f7f7f7;
     padding: 0 16px;
-    border-radius: 2px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     width: 400px;
-    height: 36px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    height: 40px;
+    border: 1px solid #eeeeee;
+    box-shadow: none;
 }
 
 .search-bar input {
-    border: none;
     outline: none;
     flex: 1;
-    font-size: 14px;
+    font-size: 13px;
+    background: transparent;
+    color: #333;
 }
 
 .search-bar button {
-    border: none;
     background: none;
-    color: var(--primary-web);
+    color: #666;
     cursor: pointer;
 }
 
 .header-nav {
     display: flex;
     gap: 30px;
-    font-weight: 500;
-    font-size: 14px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #333;
+    text-transform: uppercase;
 }
 
 .hero-section {
-    padding: 16px;
-    background: #f1f3f6;
+    padding: 60px 40px;
+    /* More padding for impact */
+    background: #ffffff;
     display: flex;
-    gap: 16px;
-    height: 280px;
+    gap: 40px;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
 }
 
 .hero-content {
@@ -203,187 +241,139 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 40px;
+    padding: 20px 0;
     align-items: flex-start;
 }
 
+/* THE BADGE from Image */
+.hero-badge {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 8px 24px;
+    border-radius: 100px;
+    /* Pill */
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 16px rgba(255, 59, 48, 0.3);
+}
+
 .hero-content h1 {
-    font-size: 32px;
-    margin-bottom: 10px;
-    color: #333;
+    font-size: 56px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: #111;
+    line-height: 1;
+    letter-spacing: -2px;
 }
 
 .hero-content p {
     color: #666;
-    margin-bottom: 20px;
-}
-
-.cta-btn {
-    background: #ff9f00;
-    /* Flipkart Orange for CTA */
-    color: white;
-    border: none;
-    padding: 10px 24px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    margin-bottom: 24px;
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 80%;
 }
 
 .hero-image {
     flex: 1;
-    background: white;
+    background: #ffffff;
+    /* Transparent/White to blend */
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+}
+
+/* Decorative Circle from Image */
+.hero-image::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border: 1px solid #e0e0e0;
+    border-radius: 50%;
+    z-index: 1;
 }
 
 .img-placeholder {
-    font-size: 80px;
-    color: #e0e0e0;
+    font-size: 100px;
+    color: #333;
+    z-index: 2;
 }
 
 .products-section {
-    padding: 24px;
+    padding: 40px;
     background: white;
-    margin-top: 10px;
-    /* Separator block */
 }
 
 .products-section h2 {
-    font-size: 20px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #f0f0f0;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #f5f5f5;
     padding-bottom: 12px;
+    letter-spacing: -0.5px;
 }
 
 .product-grid {
     display: flex;
-    gap: 16px;
+    gap: 20px;
 }
 
 .product-card {
-    border: 1px solid #f0f0f0;
-    padding: 16px;
+    border: 1px solid #eeeeee;
+    padding: 20px;
     text-align: center;
     flex: 1;
     transition: transform 0.2s;
     cursor: pointer;
+    border-radius: 8px;
+    background: #fff;
 }
 
 .product-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transform: translateY(-4px);
+    border-color: #e0e0e0;
 }
 
 .card-img {
-    height: 120px;
+    height: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 40px;
+    background: #f8f8f8;
     color: #ccc;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+    border-radius: 4px;
 }
 
 .card-info h3 {
     font-size: 14px;
+    font-weight: 600;
     margin-bottom: 4px;
+    color: #222;
 }
 
 .card-info .price {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
+    color: #000;
 }
 
 .card-info .offer {
-    color: #388e3c;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-/* --- Editor Overlays (The Magic) --- */
-.editable-element {
-    position: relative;
-    /* For absolute overlay positioning context inside? No, overlay acts on it */
-    /* In a real editor, the overlay is usually a separate sibling or a child. I'll make it a child for simplicity here */
-}
-
-.editable-element:hover {
-    outline: 2px solid rgba(0, 123, 255, 0.4) !important;
-    cursor: pointer;
-}
-
-/* Specific styling for the 'Selected' element simulation */
-.selected-element {
-    outline: 2px solid var(--accent-ui) !important;
-    z-index: 10;
-}
-
-.editor-overlay {
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    border: 2px solid var(--accent-ui);
-    pointer-events: none;
-    /* Let clicks pass through for demo mostly, or catch them */
-    display: none;
-    z-index: 50;
-}
-
-/* Show overlay on the header for demo */
-.site-header .editor-overlay {
-    display: block;
-}
-
-.resize-handle {
-    width: 8px;
-    height: 8px;
-    background: white;
-    border: 1px solid var(--accent-ui);
-    position: absolute;
-    pointer-events: auto;
-}
-
-.handle-tl {
-    top: -5px;
-    left: -5px;
-    cursor: nw-resize;
-}
-
-.handle-tr {
-    top: -5px;
-    right: -5px;
-    cursor: ne-resize;
-}
-
-.handle-bl {
-    bottom: -5px;
-    left: -5px;
-    cursor: sw-resize;
-}
-
-.handle-br {
-    bottom: -5px;
-    right: -5px;
-    cursor: se-resize;
-}
-
-.edit-badge {
-    position: absolute;
-    top: -30px;
-    left: 0;
-    background: var(--accent-ui);
-    color: white;
-    padding: 4px 8px;
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    color: #ff3b30;
+    text-transform: uppercase;
+    background: rgba(255, 59, 48, 0.1);
+    padding: 2px 6px;
     border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    margin-top: 6px;
 }
 
 /* --- Properties Panel --- */
@@ -393,7 +383,7 @@ body {
     top: var(--toolbar-height);
     bottom: 0;
     width: var(--panel-width);
-    background: white;
+    background: #ffffff;
     border-left: 1px solid var(--border-ui);
     overflow-y: auto;
     z-index: 900;
@@ -406,7 +396,10 @@ body {
     justify-content: space-between;
     align-items: center;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: #fafafa;
 }
 
 .panel-header i {
@@ -422,7 +415,7 @@ body {
 .section-label {
     font-size: 11px;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--text-body);
     font-weight: 600;
     margin-bottom: 12px;
     display: block;
@@ -519,17 +512,15 @@ body {
 
 .margin-box {
     border: 1px solid #ddd;
-    background: #e3f2fd;
-    /* Light blue */
+    background: #f0f0f0;
     padding: 16px;
     position: relative;
     border-radius: 2px;
 }
 
 .padding-box {
-    border: 1px solid #90caf9;
-    background: #fff3e0;
-    /* Light orange */
+    border: 1px solid #ddd;
+    background: #ffffff;
     padding: 12px;
     position: relative;
     border-radius: 2px;
@@ -587,4 +578,87 @@ body {
 .add-effect-btn:hover {
     border-color: var(--accent-ui);
     color: var(--accent-ui);
+}
+
+/* Editor Overlays */
+.editable-element {
+    position: relative;
+}
+
+.editable-element:hover {
+    outline: 2px solid rgba(255, 59, 48, 0.4) !important;
+    /* Red hover */
+    cursor: pointer;
+}
+
+.selected-element {
+    outline: 2px solid var(--accent-ui) !important;
+    z-index: 10;
+}
+
+.editor-overlay {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid var(--accent-ui);
+    pointer-events: none;
+    display: none;
+    z-index: 50;
+}
+
+.site-header .editor-overlay {
+    display: block;
+}
+
+/* Demo */
+
+.resize-handle {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border: 1px solid var(--accent-ui);
+    position: absolute;
+    pointer-events: auto;
+}
+
+.handle-tl {
+    top: -5px;
+    left: -5px;
+    cursor: nw-resize;
+}
+
+.handle-tr {
+    top: -5px;
+    right: -5px;
+    cursor: ne-resize;
+}
+
+.handle-bl {
+    bottom: -5px;
+    left: -5px;
+    cursor: sw-resize;
+}
+
+.handle-br {
+    bottom: -5px;
+    right: -5px;
+    cursor: se-resize;
+}
+
+.edit-badge {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    background: var(--accent-ui);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
